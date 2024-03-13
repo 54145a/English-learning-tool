@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        #container {
+            text-align: center;
+            word-break: break-all;
+        }
+
+        * {
+            font-size: xx-large;
+        }
+    </style>
+    <script src="https://cdn.bootcdn.net/ajax/libs/eruda/3.0.1/eruda.min.js"></script>
+    <script>if (new URLSearchParams(location.search).get("eruda")) eruda.init();</script>
+    <title>English Learning Tool</title>
+</head>
+
+<body>
+    <template id="mainpage">
+        <p>Word bank</p>
+    </template>
+    <template id="about">
+        <p>Made by 145a</p>
+    </template>
+    <div id="navigation">
+        <b class="text" id="heading">English Learning Tool</b>
+        <select class="text" id="navigator">
+            <option value="mainpage">mainpage</option>
+            <option value="about">about</option>
+        </select>
+    </div>
+    <hr>
+    <div id="container"></div>
+    <script>
+        const siteNavigator = document.getElementById("navigator");
+        const container = document.getElementById("container");
+        function switchpage(name) {
+            if (siteNavigator.value !== name) {
+                siteNavigator.value = name;
+            }
+            container.innerHTML = "";
+            const template = document.getElementById(name);
+            container.appendChild(template.content.cloneNode(true));
+            localStorage.setItem("page", name);
+        }
+        if (localStorage.getItem("page")) {
+            switchpage(localStorage.getItem("page"));
+        }
+        siteNavigator.onchange = function() {
+            switchpage(siteNavigator.value);
+        }
+    </script>
+</body>
+
+</html>
