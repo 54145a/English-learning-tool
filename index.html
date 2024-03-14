@@ -20,17 +20,14 @@
 </head>
 
 <body>
-    <template id="mainpage">
-        <p>Word bank</p>
-    </template>
-    <template id="about">
-        <p>Made by 145a</p>
+    <template id="wordQueuePushWord">
+        <input id="pushWordInput" type="text"><br>
+        <button id="pushWordButton" onclick="pushWord()">push</button>
     </template>
     <div id="navigation">
         <b class="text" id="heading">English Learning Tool</b>
         <select class="text" id="navigator">
-            <option value="mainpage">mainpage</option>
-            <option value="about">about</option>
+            <option value="wordQueuePushWord">Word Queue - Push Word</option>
         </select>
     </div>
     <hr>
@@ -44,15 +41,34 @@
             }
             container.innerHTML = "";
             const template = document.getElementById(name);
+            if (!template) {
+                console.error(new Error(`Can't find template: ${name}`));
+                return;
+            }
             container.appendChild(template.content.cloneNode(true));
             localStorage.setItem("page", name);
         }
         if (localStorage.getItem("page")) {
             switchpage(localStorage.getItem("page"));
         }
-        siteNavigator.onchange = function() {
+        siteNavigator.onchange = function () {
             switchpage(siteNavigator.value);
-        }
+        };
+
+        let wordQueueCache = JSON.parse(localStorage.getItem("wordQueue"))??[];
+        let wordQueue = new Proxy(wordQueueCache,{
+            set(object,property,value){
+                Reflect.set(object,property,value);
+                localStorage.setItem("wordQueue",JSON.stringify(wordQueueCache));
+                return true;
+            }
+        });
+
+        const inputWord = document.getElementById("pushWordInput");
+        function pushWord() {
+            wordQueue.push(inputWord.value);
+            inputWord.value = "";
+        };
     </script>
 </body>
 
