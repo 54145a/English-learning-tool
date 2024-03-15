@@ -20,6 +20,9 @@
 </head>
 
 <body>
+    <template id="wordQueueLearn">
+        <div id="wordCardContainer"></div>
+    </template>
     <template id="wordQueuePushWord">
         <input id="pushWordInput" type="text"><br>
         <button id="pushWordButton" onclick="pushWord()">push</button>
@@ -28,14 +31,28 @@
         <b class="text" id="heading">English Learning Tool</b>
         <select class="text" id="navigator">
             <option value="wordQueuePushWord">Word Queue - Push Word</option>
+            <option value="wordQueueLearn">Word Queue - Learn</option>
         </select>
     </div>
     <hr>
     <div id="container"></div>
     <script>
+        "use strict";
+        class PageConfigData {
+            constructor(onShow) {
+                this.onShow = onShow;
+            }
+        }
         const siteNavigator = document.getElementById("navigator");
         const container = document.getElementById("container");
-        function switchpage(name) {
+        const PAGE_CONFIG = {
+            wordQueueLearn: new PageConfigData(
+                () => {
+                    console.log("yeee!!!");
+                }
+            )
+        };
+        async function switchpage(name) {
             if (siteNavigator.value !== name) {
                 siteNavigator.value = name;
             }
@@ -47,23 +64,26 @@
             }
             container.appendChild(template.content.cloneNode(true));
             localStorage.setItem("page", name);
+            if (PAGE_CONFIG[name]) {
+                await PAGE_CONFIG[name].onShow();
+            }
         }
         if (localStorage.getItem("page")) {
             switchpage(localStorage.getItem("page"));
         }
         siteNavigator.onchange = function () {
             switchpage(siteNavigator.value);
-        };
-
-        let wordQueueCache = JSON.parse(localStorage.getItem("wordQueue"))??[];
-        let wordQueue = new Proxy(wordQueueCache,{
-            set(object,property,value){
-                Reflect.set(object,property,value);
-                localStorage.setItem("wordQueue",JSON.stringify(wordQueueCache));
+        }
+    </script>
+    <script>
+        let wordQueueCache = JSON.parse(localStorage.getItem("wordQueue")) ?? [];
+        let wordQueue = new Proxy(wordQueueCache, {
+            set(object, property, value) {
+                Reflect.set(object, property, value);
+                localStorage.setItem("wordQueue", JSON.stringify(wordQueueCache));
                 return true;
             }
         });
-
         const inputWord = document.getElementById("pushWordInput");
         function pushWord() {
             wordQueue.push(inputWord.value);
