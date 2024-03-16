@@ -68,14 +68,14 @@
                 return;
             }
             container.appendChild(template.content.cloneNode(true));
-            localStorage.setItem("page", name);
+            localStorage.setItem("englishLearningTool_page", name);
             if (PAGE_CONFIG[name]) {
                 await PAGE_CONFIG[name].onShow();
             }
         }
         onload = function () {
-            if (localStorage.getItem("page")) {
-                switchpage(localStorage.getItem("page"));
+            if (localStorage.getItem("englishLearningTool_page")) {
+                switchpage(localStorage.getItem("englishLearningTool_page"));
             } else {
                 switchpage(DEFAULT_PAGE);
             }
@@ -84,11 +84,11 @@
             };
         };
 
-        let wordQueueCache = JSON.parse(localStorage.getItem("wordQueue")) ?? [];
+        let wordQueueCache = JSON.parse(localStorage.getItem("englishLearningTool_wordQueue")) ?? [];
         let wordQueue = new Proxy(wordQueueCache, {
             set(object, property, value) {
                 Reflect.set(object, property, value);
-                localStorage.setItem("wordQueue", JSON.stringify(wordQueueCache));
+                localStorage.setItem("englishLearningTool_wordQueue", JSON.stringify(wordQueueCache));
                 return true;
             }
         });
