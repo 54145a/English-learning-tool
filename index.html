@@ -10,8 +10,12 @@
             word-break: break-all;
         }
 
+        #wordCardContainer {
+            border: solid black;
+        }
+
         * {
-            font-size: xx-large;
+            font-size: 1rem;
         }
     </style>
     <script src="https://cdn.bootcdn.net/ajax/libs/eruda/3.0.1/eruda.min.js"></script>
@@ -21,6 +25,7 @@
 
 <body>
     <template id="wordQueueLearn">
+        <b id="learnWordTitle"></b>
         <div id="wordCardContainer"></div>
     </template>
     <template id="wordQueuePushWord">
@@ -37,6 +42,7 @@
     <hr>
     <div id="container"></div>
     <script>
+
         "use strict";
         class PageConfigData {
             constructor(onShow) {
@@ -45,11 +51,10 @@
         }
         const siteNavigator = document.getElementById("navigator");
         const container = document.getElementById("container");
+        const DEFAULT_PAGE = "wordQueueLearn";
         const PAGE_CONFIG = {
             wordQueueLearn: new PageConfigData(
-                () => {
-                    console.log("yeee!!!");
-                }
+                learnWord
             )
         };
         async function switchpage(name) {
@@ -68,14 +73,17 @@
                 await PAGE_CONFIG[name].onShow();
             }
         }
-        if (localStorage.getItem("page")) {
-            switchpage(localStorage.getItem("page"));
-        }
-        siteNavigator.onchange = function () {
-            switchpage(siteNavigator.value);
-        }
-    </script>
-    <script>
+        onload = function () {
+            if (localStorage.getItem("page")) {
+                switchpage(localStorage.getItem("page"));
+            } else {
+                switchpage(DEFAULT_PAGE);
+            }
+            siteNavigator.onchange = function () {
+                switchpage(siteNavigator.value);
+            };
+        };
+
         let wordQueueCache = JSON.parse(localStorage.getItem("wordQueue")) ?? [];
         let wordQueue = new Proxy(wordQueueCache, {
             set(object, property, value) {
@@ -84,11 +92,48 @@
                 return true;
             }
         });
-        const inputWord = document.getElementById("pushWordInput");
         function pushWord() {
+            const inputWord = document.getElementById("pushWordInput");
             wordQueue.push(inputWord.value);
             inputWord.value = "";
-        };
+        }
+        function learnWord() {
+            const learnWordTitle = document.getElementById("learnWordTitle");
+            const wordCardContainer = document.getElementById("wordCardContainer");
+            learnWordTitle.textContent = `${wordQueue.length} words in queue`;
+            wordCardContainer.innerHTML = "";
+            const currentWord = wordQueue[0];
+            if (currentWord) {
+                const wordCardTitle = document.createElement("h1");
+                wordCardTitle.textContent = currentWord;
+                const wordCardOptionsContainer = document.createElement("div");
+                const referenceButton = document.createElement("button");
+                referenceButton.onclick = function () {
+                    open(`//www.iciba.com/word?w=${currentWord}`);
+                };
+                referenceButton.textContent = "reference(iciba)";
+                const nextButton = document.createElement("button");
+                nextButton.onclick = function () {
+                    wordQueue.push(wordQueue[0]);
+                    wordQueue.shift();
+                    learnWord();
+                };
+                nextButton.textContent = "next";
+                const doneButton = document.createElement("button");
+                doneButton.onclick = function () {
+                    wordQueue.shift();
+                    learnWord();
+                };
+                doneButton.textContent = "done";
+                wordCardOptionsContainer.appendChild(referenceButton);
+                wordCardOptionsContainer.appendChild(nextButton);
+                wordCardOptionsContainer.appendChild(doneButton);
+                wordCardContainer.appendChild(wordCardTitle);
+                wordCardContainer.appendChild(wordCardOptionsContainer);
+            } else {
+                wordCardContainer.textContent = `All done, time to push some new words!`;
+            }
+        }
     </script>
 </body>
 
