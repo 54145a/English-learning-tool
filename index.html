@@ -41,9 +41,10 @@
     </div>
     <hr>
     <div id="container"></div>
+    <script src="//54145a.github.io/global.js"></script>
     <script>
-
         "use strict";
+        const storage = getStorage("englishLearningTool");
         class PageConfigData {
             constructor(onShow) {
                 this.onShow = onShow;
@@ -68,14 +69,14 @@
                 return;
             }
             container.appendChild(template.content.cloneNode(true));
-            localStorage.setItem("englishLearningTool_page", name);
+            storage.page = name;
             if (PAGE_CONFIG[name]) {
                 await PAGE_CONFIG[name].onShow();
             }
         }
         onload = function () {
-            if (localStorage.getItem("englishLearningTool_page")) {
-                switchpage(localStorage.getItem("englishLearningTool_page"));
+            if (storage.page) {
+                switchpage(storage.page);
             } else {
                 switchpage(DEFAULT_PAGE);
             }
@@ -84,25 +85,18 @@
             };
         };
 
-        let wordQueueCache = JSON.parse(localStorage.getItem("englishLearningTool_wordQueue")) ?? [];
-        let wordQueue = new Proxy(wordQueueCache, {
-            set(object, property, value) {
-                Reflect.set(object, property, value);
-                localStorage.setItem("englishLearningTool_wordQueue", JSON.stringify(wordQueueCache));
-                return true;
-            }
-        });
+        if(!storage.wardQueue)storage.wordQueue = [];
         function pushWord() {
             const inputWord = document.getElementById("pushWordInput");
-            wordQueue.push(inputWord.value);
+            storage.wordQueue.push(inputWord.value);
             inputWord.value = "";
         }
         function learnWord() {
             const learnWordTitle = document.getElementById("learnWordTitle");
             const wordCardContainer = document.getElementById("wordCardContainer");
-            learnWordTitle.textContent = `${wordQueue.length} words in queue`;
+            learnWordTitle.textContent = `${storage.wordQueue.length} words in queue`;
             wordCardContainer.innerHTML = "";
-            const currentWord = wordQueue[0];
+            const currentWord = storage.wordQueue[0];
             if (currentWord) {
                 const wordCardTitle = document.createElement("h1");
                 wordCardTitle.textContent = currentWord;
@@ -114,14 +108,14 @@
                 referenceButton.textContent = "reference(iciba)";
                 const nextButton = document.createElement("button");
                 nextButton.onclick = function () {
-                    wordQueue.push(wordQueue[0]);
-                    wordQueue.shift();
+                    storage.wordQueue.push(storage.wordQueue[0]);
+                    storage.wordQueue.shift();
                     learnWord();
                 };
                 nextButton.textContent = "next";
                 const doneButton = document.createElement("button");
                 doneButton.onclick = function () {
-                    wordQueue.shift();
+                    storage.wordQueue.shift();
                     learnWord();
                 };
                 doneButton.textContent = "done";
