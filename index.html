@@ -84,8 +84,7 @@
                 switchpage(siteNavigator.value);
             };
         };
-
-        if(!storage.wardQueue)storage.wordQueue = [];
+        if(!storage.wordQueue)storage.wordQueue = [];
         function pushWord() {
             const inputWord = document.getElementById("pushWordInput");
             storage.wordQueue.push(inputWord.value);
