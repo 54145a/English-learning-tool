@@ -5,6 +5,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
+        #navigator {
+            position:sticky;
+            top:0;
+            width: 100%;
+            list-style-type: none;
+            margin:0;
+            padding: 0;
+            border-bottom: solid black;
+            overflow: hidden;
+        }
+        #navigator li {
+            display: inline;
+            padding: 2px;
+            font-weight: bold;
+        }
+        #navigator li a {
+            width: max-content;
+            text-align:center;
+        }
         #container {
             text-align: center;
             word-break: break-all;
@@ -13,50 +32,52 @@
         #wordCardContainer {
             border: solid black;
         }
-
     </style>
     <title>English Learning Tool</title>
 </head>
 
 <body>
-    <template id="wordQueueLearn">
-        <b id="learnWordTitle"></b>
+    <template id="list">
+        <b id="wordListTitle"></b>
         <div id="wordCardContainer"></div>
+        <script>
+            learnWord();
+        </script>
     </template>
-    <template id="wordQueuePushWord">
+    <template id="new">
         <input id="pushWordInput" type="text"><br>
         <button id="pushWordButton" onclick="pushWord()">push</button>
     </template>
     <div id="navigation">
-        <b class="text" id="heading">English Learning Tool</b>
-        <select class="text" id="navigator">
+        <ul id="navigator">
+            <li id="heading">English Learning Tool</li>
+            <li><a href="#new">new Word</a></li>
+            <li><a href="#list">Word List</a></li>
+        </ul>
+        <!--select class="text" id="navigator">
             <option value="wordQueuePushWord">Word Queue - Push Word</option>
             <option value="wordQueueLearn">Word Queue - Learn</option>
-        </select>
+        </select-->
     </div>
-    <hr>
     <div id="container"></div>
     <script src="//54145a.github.io/global.js"></script>
     <script>
         "use strict";
         const storage = getStorage("englishLearningTool");
-        class PageConfigData {
+        /*class PageConfigData {
             constructor(onShow) {
                 this.onShow = onShow;
             }
         }
-        const siteNavigator = document.getElementById("navigator");
+        const siteNavigator = document.getElementById("navigator");*/
         const container = document.getElementById("container");
-        const DEFAULT_PAGE = "wordQueueLearn";
-        const PAGE_CONFIG = {
+        //const DEFAULT_PAGE = "wordQueueLearn";
+        /*const PAGE_CONFIG = {
             wordQueueLearn: new PageConfigData(
                 learnWord
             )
-        };
-        async function switchpage(name) {
-            if (siteNavigator.value !== name) {
-                siteNavigator.value = name;
-            }
+        };*/
+        async function switchpage (name){
             container.innerHTML = "";
             const template = document.getElementById(name);
             if (!template) {
@@ -64,31 +85,34 @@
                 return;
             }
             container.appendChild(template.content.cloneNode(true));
-            storage.page = name;
-            if (PAGE_CONFIG[name]) {
-                await PAGE_CONFIG[name].onShow();
-            }
-        }
-        onload = function () {
-            if (storage.page) {
-                switchpage(storage.page);
-            } else {
-                switchpage(DEFAULT_PAGE);
-            }
-            siteNavigator.onchange = function () {
-                switchpage(siteNavigator.value);
-            };
+            location.hash = name;
+            /*if (location.hash === "#learnWord") {
+                learnWord();
+            }*/
         };
-        if(!storage.wordQueue)storage.wordQueue = [];
+        onload = function () {
+            //if (location.hash) {
+            switchpage(location.hash.slice(1));
+            /*} else {
+                switchpage(DEFAULT_PAGE);
+            }*/
+            /*siteNavigator.onchange = function () {
+                switchpage(siteNavigator.value);
+            };*/
+        };
+        onhashchange = async function() {
+            await switchpage(location.hash.slice(1));
+        };
+        if (!storage.wordQueue) storage.wordQueue = [];
         function pushWord() {
             const inputWord = document.getElementById("pushWordInput");
             storage.wordQueue.push(inputWord.value);
             inputWord.value = "";
         }
         function learnWord() {
-            const learnWordTitle = document.getElementById("learnWordTitle");
+            const wordListTitle = document.getElementById("wordListTitle");
             const wordCardContainer = document.getElementById("wordCardContainer");
-            learnWordTitle.textContent = `${storage.wordQueue.length} words in queue`;
+            wordListTitle.textContent = `${storage.wordQueue.length} words in queue`;
             wordCardContainer.innerHTML = "";
             const currentWord = storage.wordQueue[0];
             if (currentWord) {
