@@ -1,2 +1,6 @@
 # English-learning-tool
-145a's English learning tool
+
+## 这是什么？
+我(145a)在学习英语的过程中有一些需求，于是自己做了一个程序来解决这些问题。这也是我练手的项目，我在制作时同时也在学习html。
+
+- [x] 背单词工具
