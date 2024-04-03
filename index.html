@@ -24,7 +24,7 @@
             width: max-content;
             text-align:center;
         }
-        #container {
+        main {
             text-align: center;
             word-break: break-all;
         }
@@ -48,35 +48,19 @@
         <input id="pushWordInput" type="text"><br>
         <button id="pushWordButton" onclick="pushWord()">push</button>
     </template>
-    <div id="navigation">
+    <nav>
         <ul id="navigator">
             <li id="heading">English Learning Tool</li>
             <li><a href="#new">new Word</a></li>
             <li><a href="#list">Word List</a></li>
         </ul>
-        <!--select class="text" id="navigator">
-            <option value="wordQueuePushWord">Word Queue - Push Word</option>
-            <option value="wordQueueLearn">Word Queue - Learn</option>
-        </select-->
-    </div>
-    <div id="container"></div>
+    </nav>
+    <main></main>
     <script src="//54145a.github.io/global.js"></script>
     <script>
         "use strict";
         const storage = getStorage("englishLearningTool");
-        /*class PageConfigData {
-            constructor(onShow) {
-                this.onShow = onShow;
-            }
-        }
-        const siteNavigator = document.getElementById("navigator");*/
-        const container = document.getElementById("container");
-        //const DEFAULT_PAGE = "wordQueueLearn";
-        /*const PAGE_CONFIG = {
-            wordQueueLearn: new PageConfigData(
-                learnWord
-            )
-        };*/
+        const container = document.getElementsByTagName("main").item(0);
         async function switchpage (name){
             container.innerHTML = "";
             const template = document.getElementById(name);
@@ -86,19 +70,9 @@
             }
             container.appendChild(template.content.cloneNode(true));
             location.hash = name;
-            /*if (location.hash === "#learnWord") {
-                learnWord();
-            }*/
         };
         onload = function () {
-            //if (location.hash) {
             switchpage(location.hash.slice(1));
-            /*} else {
-                switchpage(DEFAULT_PAGE);
-            }*/
-            /*siteNavigator.onchange = function () {
-                switchpage(siteNavigator.value);
-            };*/
         };
         onhashchange = async function() {
             await switchpage(location.hash.slice(1));
