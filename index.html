@@ -5,25 +5,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        #navigator {
-            position:sticky;
-            top:0;
-            width: 100%;
-            list-style-type: none;
-            margin:0;
+        nav {
+            position: sticky;
+            top: 0;
+            background-color: white;
+        }
+        #navigation {
             padding: 0;
+            list-style-type: none;
             border-bottom: solid black;
             overflow: hidden;
         }
-        #navigator li {
+
+        #navigation li {
             display: inline;
             padding: 2px;
             font-weight: bold;
         }
-        #navigator li a {
+
+        #navigation li a {
             width: max-content;
-            text-align:center;
+            text-align: center;
         }
+
         main {
             text-align: center;
             word-break: break-all;
@@ -32,55 +36,39 @@
         #wordCardContainer {
             border: solid black;
         }
+
     </style>
     <title>English Learning Tool</title>
 </head>
 
 <body>
-    <template id="list">
-        <b id="wordListTitle"></b>
-        <div id="wordCardContainer"></div>
-        <script>
-            learnWord();
-        </script>
-    </template>
-    <template id="new">
-        <input id="pushWordInput" type="text"><br>
-        <button id="pushWordButton" onclick="pushWord()">push</button>
-    </template>
     <nav>
-        <ul id="navigator">
+        <ul id="navigation">
             <li><a href="#new">New Word</a></li>
             <li><a href="#list">Vocabulary</a></li>
         </ul>
     </nav>
-    <main></main>
-    <script src="//54145a.github.io/global.js"></script>
-    <script>
+    <main>
+        <div id="list">
+            <b id="wordListTitle"></b>
+            <div id="wordCardContainer"></div>
+        </div>
+        <div id="new">
+            <input type="text" id="pushWordInput">
+            <button id="pushWordButton">push</button>
+        </div>
+    </main>
+    <script type="module">
         "use strict";
+        import { getStorage } from "//54145a.github.io/global.js";
         const storage = getStorage("englishLearningTool");
         const container = document.getElementsByTagName("main").item(0);
-        async function switchpage (name){
-            container.innerHTML = "";
-            const template = document.getElementById(name);
-            if (!template) {
-                console.error(new Error(`Can't find template: ${name}`));
-                return;
-            }
-            container.appendChild(template.content.cloneNode(true));
-            location.hash = name;
-        };
-        onload = function () {
-            switchpage(location.hash.slice(1));
-        };
-        onhashchange = async function() {
-            await switchpage(location.hash.slice(1));
-        };
         if (!storage.wordQueue) storage.wordQueue = [];
-        function pushWord() {
+        document.getElementById("pushWordButton").onclick = function pushWord() {
             const inputWord = document.getElementById("pushWordInput");
             storage.wordQueue.push(inputWord.value);
             inputWord.value = "";
+            learnWord();
         }
         function learnWord() {
             const wordListTitle = document.getElementById("wordListTitle");
@@ -119,6 +107,7 @@
                 wordCardContainer.textContent = `All done, time to add some new words!`;
             }
         }
+        learnWord();
     </script>
 </body>
 
