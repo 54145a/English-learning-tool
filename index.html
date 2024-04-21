@@ -8,24 +8,18 @@
         nav {
             position: sticky;
             top: 0;
-            background-color: white;
         }
-        #navigation {
+
+        nav > ul {
+            display: flex;
+            margin: 0;
             padding: 0;
-            list-style-type: none;
-            border-bottom: solid black;
-            overflow: hidden;
+            list-style: none;
         }
 
-        #navigation li {
-            display: inline;
-            padding: 2px;
-            font-weight: bold;
-        }
-
-        #navigation li a {
-            width: max-content;
-            text-align: center;
+        nav > ul > li {
+            margin-left: auto;
+            margin-right: auto;
         }
 
         main {
@@ -33,17 +27,21 @@
             word-break: break-all;
         }
 
+        main > div {
+            min-height: 100svh;
+            padding-top: 10svh;
+        }
+
         #wordCardContainer {
             border: solid black;
         }
-
     </style>
     <title>English Learning Tool</title>
 </head>
 
 <body>
     <nav>
-        <ul id="navigation">
+        <ul>
             <li><a href="#new">New Word</a></li>
             <li><a href="#list">Vocabulary</a></li>
         </ul>
@@ -69,7 +67,7 @@
             storage.wordQueue.push(inputWord.value);
             inputWord.value = "";
             learnWord();
-        }
+        };
         function learnWord() {
             const wordListTitle = document.getElementById("wordListTitle");
             const wordCardContainer = document.getElementById("wordCardContainer");
