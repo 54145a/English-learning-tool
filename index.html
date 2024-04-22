@@ -62,12 +62,12 @@
         const storage = getStorage("englishLearningTool");
         const container = document.getElementsByTagName("main").item(0);
         if (!storage.wordQueue) storage.wordQueue = [];
-        document.getElementById("pushWordButton").onclick = function pushWord() {
+        document.getElementById("pushWordButton").addEventListener("click", function() {
             const inputWord = document.getElementById("pushWordInput");
             storage.wordQueue.push(inputWord.value);
             inputWord.value = "";
             learnWord();
-        };
+        });
         function learnWord() {
             const wordListTitle = document.getElementById("wordListTitle");
             const wordCardContainer = document.getElementById("wordCardContainer");
