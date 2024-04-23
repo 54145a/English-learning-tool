@@ -90,15 +90,16 @@
                     learnWord();
                 };
                 nextButton.textContent = "next";
-                const doneButton = document.createElement("button");
-                doneButton.onclick = function () {
+                const removeButton = document.createElement("button");
+                removeButton.onclick = function () {
+                    if(!confirm(`Do you want to remove "${storage.wordQueue[0]}"`)) return;
                     storage.wordQueue.shift();
                     learnWord();
                 };
-                doneButton.textContent = "done";
+                removeButton.textContent = "remove";
                 wordCardOptionsContainer.appendChild(referenceButton);
                 wordCardOptionsContainer.appendChild(nextButton);
-                wordCardOptionsContainer.appendChild(doneButton);
+                wordCardOptionsContainer.appendChild(removeButton);
                 wordCardContainer.appendChild(wordCardTitle);
                 wordCardContainer.appendChild(wordCardOptionsContainer);
             } else {
