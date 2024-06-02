@@ -38,7 +38,7 @@
         document.getElementById("addWordButton").addEventListener("click", function() {
             const word = wordInput.value;
             if(!word)return;
-            storage.wordList.push(word);
+            storage.wordList.unshift(word);
             wordInput.value = "";
             alert(`Added "${word}".`);
             refreshWordList();
