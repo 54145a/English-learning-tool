@@ -5,108 +5,65 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        nav {
-            position: sticky;
-            top: 0;
-        }
-
-        nav > ul {
-            display: flex;
-            margin: 0;
-            padding: 0;
-            list-style: none;
-        }
-
-        nav > ul > li {
-            margin-left: auto;
-            margin-right: auto;
-        }
-
         main {
             text-align: center;
             word-break: break-all;
         }
 
-        main > div {
-            min-height: 100svh;
-            padding-top: 10svh;
+        #wordList > a {
+            display: block;
         }
 
-        #wordCardContainer {
-            border: solid black;
-        }
     </style>
     <title>English Learning Tool</title>
 </head>
 
 <body>
-    <nav>
-        <ul>
-            <li><a href="#new">New Word</a></li>
-            <li><a href="#list">Vocabulary</a></li>
-        </ul>
-    </nav>
     <main>
-        <div id="list">
-            <b id="wordListTitle"></b>
-            <div id="wordCardContainer"></div>
+        <div id="edit">
+            <input type="text" id="wordInput" placeholder="Input word" />
+            <button id="addWordButton">add</button>
+            <button id="deleteWordButton">delete</button>
         </div>
-        <div id="new">
-            <input type="text" id="pushWordInput">
-            <button id="pushWordButton">push</button>
+        <div id="wordList">
         </div>
     </main>
     <script type="module">
         "use strict";
         import { getStorage } from "//54145a.github.io/global.js";
         const storage = getStorage("englishLearningTool");
-        const container = document.getElementsByTagName("main").item(0);
-        if (!storage.wordQueue) storage.wordQueue = [];
-        document.getElementById("pushWordButton").addEventListener("click", function() {
-            const inputWord = document.getElementById("pushWordInput");
-            storage.wordQueue.push(inputWord.value);
-            inputWord.value = "";
-            learnWord();
+        const wordInput = document.getElementById("wordInput");
+        const wordList = document.getElementById("wordList");
+        if (!storage.wordList) storage.wordList = storage.wordQueue ?? [];
+        document.getElementById("addWordButton").addEventListener("click", function() {
+            const word = wordInput.value;
+            if(!word)return;
+            storage.wordList.push(word);
+            wordInput.value = "";
+            alert(`Added "${word}".`);
+            refreshWordList();
         });
-        function learnWord() {
-            const wordListTitle = document.getElementById("wordListTitle");
-            const wordCardContainer = document.getElementById("wordCardContainer");
-            wordListTitle.textContent = `${storage.wordQueue.length} words in queue`;
-            wordCardContainer.innerHTML = "";
-            const currentWord = storage.wordQueue[0];
-            if (currentWord) {
-                const wordCardTitle = document.createElement("h1");
-                wordCardTitle.textContent = currentWord;
-                const wordCardOptionsContainer = document.createElement("div");
-                const referenceButton = document.createElement("button");
-                referenceButton.onclick = function () {
-                    open(`//www.iciba.com/word?w=${currentWord}`);
-                };
-                referenceButton.textContent = "reference(iciba)";
-                const nextButton = document.createElement("button");
-                nextButton.onclick = function () {
-                    storage.wordQueue.push(storage.wordQueue[0]);
-                    storage.wordQueue.shift();
-                    learnWord();
-                };
-                nextButton.textContent = "next";
-                const removeButton = document.createElement("button");
-                removeButton.onclick = function () {
-                    if(!confirm(`Do you want to remove "${storage.wordQueue[0]}"`)) return;
-                    storage.wordQueue.shift();
-                    learnWord();
-                };
-                removeButton.textContent = "remove";
-                wordCardOptionsContainer.appendChild(referenceButton);
-                wordCardOptionsContainer.appendChild(nextButton);
-                wordCardOptionsContainer.appendChild(removeButton);
-                wordCardContainer.appendChild(wordCardTitle);
-                wordCardContainer.appendChild(wordCardOptionsContainer);
-            } else {
-                wordCardContainer.textContent = `All done, time to add some new words!`;
+        document.getElementById("deleteWordButton").addEventListener("click",function(){
+            const word = wordInput.value;
+            if(!word||!confirm(`Do you want delete "${word}"? This can't be undo.`))return;
+            if(!storage.wordList.includes(word)){
+                alert(`No such word in list; "${word}"`);
+                return;
+            }
+            storage.wordList.splice(storage.wordList.indexOf(wordInput.value),1);
+            refreshWordList();
+        });
+        function refreshWordList(){
+            wordList.innerHTML = "";
+            for(const word of storage.wordList){
+                const a = document.createElement("a");
+                a.href = `//www.iciba.com/word?w=${word}`;
+                a.target = "_blank";
+                a.textContent = word;
+                wordList.appendChild(a);
             }
         }
-        learnWord();
+        refreshWordList();
     </script>
 </body>
 
